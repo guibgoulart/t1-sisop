@@ -10,6 +10,7 @@ public class Processo {
     private int creditos;
     private int ordem;
     private EstadoProcesso estado;
+    public int tempoRestanteES;
 
     public Processo(String nome, int surtoCpu, int tempoES, int tempoTotalCpu, int prioridade, int ordem) {
         this.nome = nome;
@@ -17,9 +18,10 @@ public class Processo {
         this.tempoES = tempoES;
         this.tempoTotalCpu = tempoTotalCpu;
         this.prioridade = prioridade;
-        this.creditos = prioridade; // créditos iniciam iguais à prioridade
+        this.creditos = prioridade;
         this.ordem = ordem;
-        this.estado = EstadoProcesso.PRONTO; // estado inicial é 'PRONTO'
+        this.estado = EstadoProcesso.PRONTO;
+        this.tempoRestanteES = 0; // Inicializamos o tempo restante de E/S como 0
     }
 
     // Getters
@@ -55,20 +57,31 @@ public class Processo {
         return estado;
     }
 
-    // manipulação do estado e dos créditos do processo
     public void decrementarCreditos() {
         if (creditos > 0) {
             creditos--;
         }
     }
 
+    public void decrementarTempoTotalCpu(int tempo) {
+        this.tempoTotalCpu = Math.max(0, this.tempoTotalCpu - tempo); // Garante que nunca seja negativo
+    }
+
+    public void decrementarTempoTotalCpu() {
+        if (tempoTotalCpu > 0) {
+            tempoTotalCpu--;
+        }
+    }
+
+    public void resetarCreditos() {
+        this.creditos = (this.creditos / 2) + this.prioridade;  // Fórmula: cred = cred/2 + prioridade
+    }
+
     public void mudarEstado(EstadoProcesso novoEstado) {
         if (this.estado == EstadoProcesso.FINALIZADO) {
-            // Um processo finalizado não pode mudar de estado
-            return;
+            return; // Processo finalizado não pode mudar de estado
         }
 
-        // Validação das transições de estado
         switch (this.estado) {
             case PRONTO:
                 if (novoEstado == EstadoProcesso.FINALIZADO) {
@@ -77,14 +90,12 @@ public class Processo {
                 break;
 
             case EXECUTANDO:
-                // De EXECUTANDO, pode ir para BLOQUEADO ou FINALIZADO ou retornar para PRONTO se não estiver finalizado
                 if (novoEstado != EstadoProcesso.BLOQUEADO && novoEstado != EstadoProcesso.FINALIZADO && novoEstado != EstadoProcesso.PRONTO) {
                     throw new IllegalStateException("O estado não pode mudar de EXECUTANDO para " + novoEstado);
                 }
                 break;
 
             case BLOQUEADO:
-                // De BLOQUEADO, pode ir para PRONTO após a operação de E/S
                 if (novoEstado != EstadoProcesso.PRONTO) {
                     throw new IllegalStateException("O estado não pode mudar de BLOQUEADO para " + novoEstado);
                 }
@@ -94,21 +105,7 @@ public class Processo {
                 throw new IllegalStateException("Transição de estado inválida.");
         }
 
-        // Se a transição for válida, mudamos o estado
         this.estado = novoEstado;
-    }
-
-
-
-    // resetar os créditos de acordo com a fórmula: cred = cred/2 + prio
-    public void resetarCreditos() {
-        creditos = creditos / 2 + prioridade;
-    }
-
-    public void decrementarTempoTotalCpu() {
-        if (tempoTotalCpu > 0) {
-            tempoTotalCpu--;
-        }
     }
 
     @Override
