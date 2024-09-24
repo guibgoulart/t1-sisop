@@ -47,9 +47,18 @@ public class Escalonador {
 
     // Método principal para gerenciar a execução do processo
     public void executarProcesso(Processo p) {
-        iniciarExecucao(p);
-        processarSurtoCPU(p);
-        finalizarOuBloquearProcesso(p); // Chama o método para decidir se bloqueia ou finaliza
+        if (p.getCreditos() > 0 && p.getEstado() == EstadoProcesso.PRONTO) {  // Certifique-se de que o processo tem créditos e está PRONTO
+            iniciarExecucao(p);
+            processarSurtoCPU(p);
+
+            if (p.getTempoTotalCpu() > 0 && p.getCreditos() <= 0) {
+                // Se o processo não terminou a CPU e os créditos acabaram, retorna para PRONTO
+                p.mudarEstado(EstadoProcesso.PRONTO);
+            } else {
+                // Caso contrário, decide se o processo será finalizado ou bloqueado
+                finalizarOuBloquearProcesso(p);
+            }
+        }
     }
 
     // Método para iniciar a execução do processo
