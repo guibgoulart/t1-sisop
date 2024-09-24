@@ -257,6 +257,8 @@ public class EscalonadorTest {
         // Inicializa os processos com prioridade 2 e sem operações de E/S
         p1 = new Processo("A", 3, 0, 6, 2, 1); // Prioridade 2
         p2 = new Processo("B", 2, 0, 6, 2, 2); // Prioridade 2
+        p3 = new Processo("C", 3, 0, 6, 2, 1); // Prioridade 2
+        p4 = new Processo("D", 2, 0, 6, 2, 2); // Prioridade 2
 
         // Executa até os créditos de ambos acabarem
         while (p1.getCreditos() > 0) {
@@ -265,21 +267,39 @@ public class EscalonadorTest {
         while (p2.getCreditos() > 0) {
             escalonador.executarProcesso(p2);
         }
+        while (p3.getCreditos() > 0) {
+            escalonador.executarProcesso(p3);
+        }
+        while (p4.getCreditos() > 0) {
+            escalonador.executarProcesso(p4);
+        }
+
 
         // Ambos os processos PRONTOS estão sem créditos
         assertEquals(0, p1.getCreditos(), "O processo A deveria estar com 0 créditos.");
         assertEquals(0, p2.getCreditos(), "O processo B deveria estar com 0 créditos.");
+        assertEquals(0, p3.getCreditos(), "O processo C deveria estar com 0 créditos.");
+        assertEquals(0, p4.getCreditos(), "O processo D deveria estar com 0 créditos.");
+
 
         // Verifica se a fila de prontos está vazia de créditos e, se sim, redistribui
         escalonador.resetarCreditos();
 
         // Verifica se os créditos foram redistribuídos corretamente com a fórmula correta
         int expectedCreditosP1 = (p1.getCreditos() / 2) + p1.getPrioridade();
-        int expectedCreditosP2 = (p1.getCreditos() / 2) + p2.getPrioridade();
+        int expectedCreditosP2 = (p2.getCreditos() / 2) + p2.getPrioridade();
+        int expectedCreditosP3 = (p3.getCreditos() / 2) + p3.getPrioridade();
+        int expectedCreditosP4 = (p4.getCreditos() / 2) + p4.getPrioridade();
+
+
 
         // Faz a verificação usando a fórmula correta
         assertEquals(expectedCreditosP1, p1.getCreditos(), "Os créditos do processo A deveriam ser redistribuídos corretamente.");
         assertEquals(expectedCreditosP2, p2.getCreditos(), "Os créditos do processo B deveriam ser redistribuídos corretamente.");
+        assertEquals(expectedCreditosP3, p3.getCreditos(), "Os créditos do processo C deveriam ser redistribuídos corretamente.");
+        assertEquals(expectedCreditosP4, p4.getCreditos(), "Os créditos do processo D deveriam ser redistribuídos corretamente.");
+
+
     }
 
     @Test
@@ -305,5 +325,10 @@ public class EscalonadorTest {
 
         // Após consumir todo o tempo de CPU, o processo A deve estar no estado FINALIZADO
         assertEquals(EstadoProcesso.FINALIZADO, p1.getEstado(), "O processo A deveria estar finalizado após consumir todo o tempo de CPU.");
+    }
+
+    @Test
+    public void testEscalonador(){
+        escalonador.iniciarEscalonamento();
     }
 }

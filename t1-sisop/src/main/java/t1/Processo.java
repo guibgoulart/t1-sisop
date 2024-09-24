@@ -74,8 +74,10 @@ public class Processo {
     }
 
     public void resetarCreditos() {
-        this.creditos = (this.creditos / 2) + this.prioridade;  // Fórmula: cred = cred/2 + prioridade
+        this.creditos = ((this.creditos / 2) + this.prioridade);  // Garante que ao menos 1 crédito seja atribuído
     }
+
+
 
     public void mudarEstado(EstadoProcesso novoEstado) {
         if (this.estado == EstadoProcesso.FINALIZADO) {

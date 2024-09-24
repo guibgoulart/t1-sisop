@@ -59,18 +59,21 @@ public class Escalonador {
 
     // Método para processar o surto de CPU
     public void processarSurtoCPU(Processo p) {
-        int tempoExecutado = Math.min(p.getSurtoCpu(), p.getTempoTotalCpu());
+        int tempoExecutado = p.getSurtoCpu();
 
         for (int i = 0; i < tempoExecutado; i++) {
-            p.decrementarCreditos(); // Reduz 1 crédito a cada milissegundo
-            p.decrementarTempoTotalCpu(1); // Desconta 1ms do tempo total de CPU
-            tempo++; // Incrementa o tempo global do sistema
+            if (p.getCreditos() > 0) {
+                p.decrementarCreditos(); // Reduz 1 crédito a cada milissegundo
+                p.decrementarTempoTotalCpu(1); // Desconta 1ms do tempo total de CPU
+                tempo++; // Incrementa o tempo global do sistema
+            }
 
             // Se o tempo total de CPU do processo acabar, interrompemos o loop
             if (p.getTempoTotalCpu() <= 0) {
                 break;
             }
         }
+
     }
 
     // Método para verificar se o processo deve ser finalizado ou bloqueado para E/S
@@ -90,8 +93,9 @@ public class Escalonador {
         System.out.println("Processo " + p.getNome() + " bloqueado para E/S");
 
         // Incrementa o tempo global do sistema com o tempo de E/S
-        tempo += p.getTempoES(); // Apenas incrementa o tempo de E/S no sistema
+        tempo += p.getTempoES();
     }
+
 
     // Verifica se todos os processos na fila de PRONTOS estão sem créditos
     private boolean todosProcessosProntosSemCreditos() {
@@ -125,7 +129,6 @@ public class Escalonador {
                     resetarCreditos();  // Redistribui os créditos de todos os processos
                 }
             }
-
             // Incrementa o tempo global do sistema após cada ciclo de execução
             tempo++;
         }
