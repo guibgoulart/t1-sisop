@@ -17,6 +17,7 @@ public class Escalonador {
         for (Processo p : listaDeProcessos) {
             // Redistribui os créditos de acordo com a fórmula, independentemente do estado
             p.resetarCreditos();
+            System.out.println("Processo: " + p.getNome() + " | Créditos resetados para: " + p.getCreditos());
         }
     }
 
@@ -54,7 +55,7 @@ public class Escalonador {
     // Método para iniciar a execução do processo
     public void iniciarExecucao(Processo p) {
         p.mudarEstado(EstadoProcesso.EXECUTANDO);
-        System.out.println("Tempo: " + tempo + "ms - Executando processo: " + p.getNome());
+        System.out.println("Tempo: " + tempo + "ms - Executando processo: " + p.getNome() + " | Créditos: " + p.getCreditos());
     }
 
     // Método para processar o surto de CPU
@@ -66,6 +67,8 @@ public class Escalonador {
                 p.decrementarCreditos(); // Reduz 1 crédito a cada milissegundo
                 p.decrementarTempoTotalCpu(1); // Desconta 1ms do tempo total de CPU
                 tempo++; // Incrementa o tempo global do sistema
+
+                System.out.println("Tempo: " + tempo + "ms - Processo: " + p.getNome() + " | Créditos restantes: " + p.getCreditos() + " | Tempo restante de CPU: " + p.getTempoTotalCpu());
             }
 
             // Se o tempo total de CPU do processo acabar, interrompemos o loop
@@ -90,7 +93,7 @@ public class Escalonador {
     // Método para bloquear o processo para operações de E/S
     public void bloquearParaES(Processo p) {
         p.mudarEstado(EstadoProcesso.BLOQUEADO);
-        System.out.println("Processo " + p.getNome() + " bloqueado para E/S");
+        System.out.println("Tempo: " + tempo + "ms - Processo " + p.getNome() + " bloqueado para E/S por " + p.getTempoES() + "ms.");
 
         // Incrementa o tempo global do sistema com o tempo de E/S
         tempo += p.getTempoES();
@@ -122,6 +125,7 @@ public class Escalonador {
             Processo processoExecutando = selecionarProcesso();
 
             if (processoExecutando != null) {
+                System.out.println("Tempo: " + tempo + "ms - Processo selecionado para execução: " + processoExecutando.getNome());
                 executarProcesso(processoExecutando);
             } else {
                 // Se nenhum processo tem créditos, redistribuímos os créditos
@@ -132,5 +136,6 @@ public class Escalonador {
             // Incrementa o tempo global do sistema após cada ciclo de execução
             tempo++;
         }
+        System.out.println("Todos os processos foram finalizados.");
     }
 }
