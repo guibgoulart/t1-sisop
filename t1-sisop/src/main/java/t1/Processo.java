@@ -11,6 +11,7 @@ public class Processo {
     private int ordem;
     private EstadoProcesso estado;
     public int tempoRestanteES;
+    private int turnarroundTime;
 
     public Processo(String nome, int surtoCpu, int tempoES, int tempoTotalCpu, int prioridade, int ordem) {
         this.nome = nome;
@@ -41,6 +42,10 @@ public class Processo {
         return tempoTotalCpu;
     }
 
+    public int getTurnarroundTime() {
+        return turnarroundTime;
+    }
+
     public int getPrioridade() {
         return prioridade;
     }
@@ -55,6 +60,10 @@ public class Processo {
 
     public EstadoProcesso getEstado() {
         return estado;
+    }
+
+    public void calculaTurnaroundTime(int tempoDeInicio) {
+        turnarroundTime = tempoDeInicio + tempoTotalCpu;
     }
 
     public void decrementarCreditos() {
@@ -112,8 +121,8 @@ public class Processo {
 
     @Override
     public String toString() {
-        return String.format("Processo %s: Estado = %s, Créditos = %d, Tempo Total de CPU = %d",
-                nome, estado, creditos, tempoTotalCpu);
+        return String.format("Processo %s: Estado = %s, Créditos = %d, Tempo Total de CPU = %d, Turnarround time = %d",
+                nome, estado, creditos, tempoTotalCpu, turnarroundTime);
     }
 }
 

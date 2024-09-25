@@ -70,7 +70,7 @@ public class Escalonador {
     // Método para processar o surto de CPU
     public void processarSurtoCPU(Processo p) {
         int tempoExecutado = p.getSurtoCpu();
-
+        int tempoDeInicio = tempo;
         for (int i = 0; i < tempoExecutado; i++) {
             if (p.getCreditos() > 0) {
                 p.decrementarCreditos(); // Reduz 1 crédito a cada milissegundo
@@ -79,9 +79,9 @@ public class Escalonador {
 
                 System.out.println("Tempo: " + tempo + "ms - Processo: " + p.getNome() + " | Créditos restantes: " + p.getCreditos() + " | Tempo restante de CPU: " + p.getTempoTotalCpu());
             }
-
             // Se o tempo total de CPU do processo acabar, interrompemos o loop
             if (p.getTempoTotalCpu() <= 0) {
+                p.calculaTurnaroundTime(tempoDeInicio);
                 break;
             }
         }
