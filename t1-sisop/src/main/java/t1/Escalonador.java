@@ -9,7 +9,7 @@ public class Escalonador {
     // Construtor que recebe a lista de processos
     public Escalonador(List<Processo> processos) {
         this.listaDeProcessos = processos;
-        this.tempo = 0; // Inicializa o tempo total do sistema
+        this.tempo = 1; // Inicializa o tempo total do sistema
     }
 
     public void resetarCreditos() {
@@ -70,7 +70,7 @@ public class Escalonador {
     // Método para processar o surto de CPU
     public void processarSurtoCPU(Processo p) {
         int tempoExecutado = p.getSurtoCpu();
-        int tempoDeInicio = tempo;
+        if (p.getTempoDeInicio() == 0) p.setTempoDeInicio(tempo);
         for (int i = 0; i < tempoExecutado; i++) {
             if (p.getCreditos() > 0) {
                 p.decrementarCreditos(); // Reduz 1 crédito a cada milissegundo
@@ -81,7 +81,7 @@ public class Escalonador {
             }
             // Se o tempo total de CPU do processo acabar, interrompemos o loop
             if (p.getTempoTotalCpu() <= 0) {
-                p.calculaTurnaroundTime(tempoDeInicio);
+                p.calculaTurnaroundTime(tempo);
                 break;
             }
         }
